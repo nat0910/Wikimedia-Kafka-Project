@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  jupyterlabs:
+    image: jupyter/pyspark-notebook:latest
+    networks:
+      - kafka-net
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+    volumes:
+      - ./jupyter-data:/home/jovyan/work
+    environment:
+      - JUPYTER_TOKEN=mysecrettoken
+      - PYSPARK_SUBMIT_ARGS=--packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0 pyspark-shell
+    restart: always
 
   kafka1:
     image: apache/kafka:latest
@@ -96,7 +109,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-
 
 networks:
   kafka-net:
